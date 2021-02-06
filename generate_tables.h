@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include "sha1.h"
+
 int generate_table(){
 
     int counter = 0;
@@ -10,11 +13,11 @@ int generate_table(){
 
     //Initiallizing all the characters.
     for (counter = 0; counter < 26; counter++){
-        letters[0][counter] = 97 + counter;
+        letters[counter] = 97 + counter;
     }
 
     for (counter = 0; counter < 26; counter++){
-        capitalLetters[0][counter] = 65 + counter;
+        capitalLetters[counter] = 65 + counter;
     }
 
     for (counter = 0; counter < 10; counter++){
@@ -22,12 +25,18 @@ int generate_table(){
     }
 
     //not all symbols are inculded
-    char symbols[20] = {'!','@','#','$','%%','^','&','*','~','?','-','_','(',')','+','=',';',':','<','>'};
-
+    for (counter = 0; counter < 15; counter++){
+        symbols[counter] = counter + 33;
+    }
+    symbols[15] = 61;
+    symbols[16] = 63;
+    symbols[17] = 64;
+    symbols[18] = 95;
+    symbols[19] = 126;
 
     //Genarating all available passwords.
     //Starting with 1 word password. 
-    //Limiting password lenght to 10 characters.
+    //Limiting password lenght to 9 characters.
 
     //Creating 2d array for each password lenght
     //The first column contains the password and the second the SHA1 hash on that password.
@@ -40,15 +49,14 @@ int generate_table(){
     char * sevenChars[32057708828125][2];
     char * eightChars[2724905250390625][2];
     char * nineChars[231616946283203125][2];
-    char * tenChars[19687440434072265625][2];
 
-    int counter = 0;
+    counter = 0;
 
-    int numberOfCharacters = 1;;
+    int numberOfCharacters = 1;
     //The value of numberOfCharacters shows how many characters our word has we want to crack.
-    //Maximum value is a word (a password) with 10 characters.
+    //Maximum value is a word (a password) with 9 characters.
 
-    int characterPosition = 0
+    int characterPosition = 0;
     //characterPosition points to the characters we want to insert, from the initiallazation array 
     //we created earlier
 
@@ -56,23 +64,23 @@ int generate_table(){
     //stringPosition points in the character array(string) we want to insert our character.
     //depending on the variable numberOfCharacters, stringPosition meets its maximum value.
     //First goes till the value 1, namely the word with 1 character.
-    //In the final repetition of while, goes till the value 10, namely the word with 10 character.
+    //In the final repetition of while, goes till the value 9, namely the word with 10 character.
 
 
 
-    while (numberOfCharacters < 11){
+    while (numberOfCharacters < 10){
         for (characterPosition = 0; characterPosition < 26; characterPosition++){
             for (stringPosition = 0; stringPosition < numberOfCharacters; stringPosition++){
-                oneChar[stringPosition][counter][0] = letters[characterPosition]
+                oneChar[stringPosition][counter][0] = letters[characterPosition];
                 counter ++;
-                oneChar[stringPosition][counter][0] = capitalLetters[characterPosition]
+                oneChar[stringPosition][counter][0] = capitalLetters[characterPosition];
                 counter ++;
                 if (characterPosition < 20){
-                    oneChar[stringPosition][counter][0] = symbols[characterPosition]
+                    oneChar[stringPosition][counter][0] = symbols[characterPosition];
                     counter++;
                 }
                 if (characterPosition < 10){
-                    oneChar[stringPosition][counter][0] = numbers[characterPosition]
+                    oneChar[stringPosition][counter][0] = numbers[characterPosition];
                     counter++;
                 }
             }
@@ -80,6 +88,13 @@ int generate_table(){
         numberOfCharacters++;
     }
 
+    char result[21];
+    char const string[] = "abc";
+
+    printf("it is done\n");
+
+    SHA1( result, string, strlen(string) );
+    printf("%s\n",result);
 
 
 

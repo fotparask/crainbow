@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "generate_tables.h"
 
 void drawline();
 
@@ -41,7 +42,7 @@ int main(){
     drawline();
 
     
-
+    generate_table();
 
     return 0;
 }
