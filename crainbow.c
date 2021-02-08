@@ -1,7 +1,8 @@
 #include <stdio.h>
-#include "generate_tables.h"
+#define SUCCESS 0
 
 void drawline();
+void testvec1();
 
 
 int main(){
@@ -40,9 +41,12 @@ int main(){
 
     printf("You entered the SHA1 hash value:%s\n\n", hash_value);
     drawline();
+    
+
+    testvec1();
 
     
-    generate_table();
+    //generate_table();
 
     return 0;
 }
@@ -53,4 +57,23 @@ void drawline(){
 
     printf("-------------------------------------------------------------\n");
 
+}
+
+
+void testvec1(){
+    char const string[] = "abc";
+    char const expect[] = "a9993e364706816aba3e25717850c26c9cd0d89d";
+    char result[21];
+    char hexresult[41];
+    size_t offset;
+
+    /* calculate hash */
+    SHA1( result, string, strlen(string) );
+
+    /* format the hash for comparison */
+    for( offset = 0; offset < 20; offset++) {
+        sprintf( ( hexresult + (2*offset)), "%02x", result[offset]&0xff);
+    }
+
+    printf("sha1 value of abc is: %s\n",hexresult);
 }

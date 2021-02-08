@@ -1,60 +1,72 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <sqlite3.h> 
+#include <iostream> 
 #include "sha1.h"
 
+
+int generate_table();
+void createHashChain();
+char * reductionFuntion(char * hashValue);
+
+
+
+
 int generate_table(){
+
+    
 
     int counter = 0;
 
     char letters[26];
-    char capitalLetters[26];
-    char symbols[10];
     char numbers[10];
+    char charList[36];
+
+    printf("it is done\n");
 
 
-    //Initiallizing all the characters.
+
+    //We will be searching for a word with non-Capital letters and numbers
+    //Initiallizing all the english letters.(using ASCII)
     for (counter = 0; counter < 26; counter++){
         letters[counter] = 97 + counter;
+        charList[counter] = letters[counter];
     }
 
-    for (counter = 0; counter < 26; counter++){
-        capitalLetters[counter] = 65 + counter;
-    }
-
+    //Initiallizing decimal number set (0-9).
     for (counter = 0; counter < 10; counter++){
         numbers[counter] = counter;
+        charList[26 + counter] = numbers[counter];
     }
+    
 
-    //not all symbols are inculded
-    for (counter = 0; counter < 15; counter++){
-        symbols[counter] = counter + 33;
-    }
-    symbols[15] = 61;
-    symbols[16] = 63;
-    symbols[17] = 64;
-    symbols[18] = 95;
-    symbols[19] = 126;
 
     //Genarating all available passwords.
     //Starting with 1 word password. 
-    //Limiting password lenght to 9 characters.
+    //Limiting password lenght to 8 characters.
 
-    //Creating 2d array for each password lenght
-    //The first column contains the password and the second the SHA1 hash on that password.
-    char * oneChar[85][2];
-    char * twoChars[7225][2];
-    char * threeChars[614125][2];
-    char * fourChars[52200625][2];
-    char * fiveChars[4437053125][2];
-    char * sixChars[377149515625][2];
-    char * sevenChars[32057708828125][2];
-    char * eightChars[2724905250390625][2];
-    char * nineChars[231616946283203125][2];
 
-    counter = 0;
+    char oneCharHashChain[5];
+    char twoCharsHashChain[250];
+    char threeCharsHashChain[12500][2];
+    char fourCharsHashChain[625000][2];
+    char fiveCharsHashChain[31250000][2];
+    char sixCharsHashChain[1562500000][2];
+    char sevenCharsHashChain[78125000000][2];
+    char eightCharsHashChain[3906250000000][2];
+
+    //Reduced function will be described better in the README file.
+    
+
+
+
+
 
     int numberOfCharacters = 1;
     //The value of numberOfCharacters shows how many characters our word has we want to crack.
-    //Maximum value is a word (a password) with 9 characters.
+    //Maximum value is a word (a password) with 8 characters.
 
     int characterPosition = 0;
     //characterPosition points to the characters we want to insert, from the initiallazation array 
@@ -68,35 +80,112 @@ int generate_table(){
 
 
 
-    while (numberOfCharacters < 10){
-        for (characterPosition = 0; characterPosition < 26; characterPosition++){
-            for (stringPosition = 0; stringPosition < numberOfCharacters; stringPosition++){
-                oneChar[stringPosition][counter][0] = letters[characterPosition];
-                counter ++;
-                oneChar[stringPosition][counter][0] = capitalLetters[characterPosition];
-                counter ++;
-                if (characterPosition < 20){
-                    oneChar[stringPosition][counter][0] = symbols[characterPosition];
-                    counter++;
-                }
-                if (characterPosition < 10){
-                    oneChar[stringPosition][counter][0] = numbers[characterPosition];
-                    counter++;
-                }
-            }
-        }
-        numberOfCharacters++;
-    }
+    // while (numberOfCharacters < 10){
+    //     for (characterPosition = 0; characterPosition < 26; characterPosition++){
+    //         for (stringPosition = 0; stringPosition < numberOfCharacters; stringPosition++){
+    //             oneChar[stringPosition][counter][0] = letters[characterPosition];
+    //             counter ++;
+    //             oneChar[stringPosition][counter][0] = capitalLetters[characterPosition];
+    //             counter ++;
+    //             if (characterPosition < 20){
+    //                 oneChar[stringPosition][counter][0] = symbols[characterPosition];
+    //                 counter++;
+    //             }
+    //             if (characterPosition < 10){
+    //                 oneChar[stringPosition][counter][0] = numbers[characterPosition];
+    //                 counter++;
+    //             }
+    //         }
+    //     }
+    //     numberOfCharacters++;
+    // }
 
-    char result[21];
-    char const string[] = "abc";
-
-    printf("it is done\n");
-
-    SHA1( result, string, strlen(string) );
-    printf("%s\n",result);
-
+    
 
 
     return 0;
 }
+
+
+
+
+char ** createHashChain(char * characterList){
+
+    int wordLenght = 2;
+    char word[wordLenght];
+    char * chainEndpoints[2]
+    int counter = 0;
+
+    typedef struct node{
+        char * word;
+        struct node *next;
+    } hashChainNode;
+
+    hashChainNode *chainVar1 = malloc(sizeof(hashChainNode));
+    hashChainNode *chainVar2 = malloc(sizeof(hashChainNode));
+    hashChainNode *chainVar3 = malloc(sizeof(hashChainNode));
+
+    srand(time(0));
+ 
+    strcpy(word, "t");
+    strcat(word, "s");
+
+    rand()%36
+ 
+    //generating random words and adding them to the first point of the hash chain
+    //We need a random first word for the hash chain in order to proceed.
+    //we pick a random character from the array characterList, that has all characters.
+    char temp = characterList[rand()%36];
+    //then append that character at a string.
+    strncat(word, &temp, 1);
+
+    //repeating this procedure times the word lenght.
+
+    chainEndpoints[0] = word;
+
+
+    for(counter = 0; counter < 10; counter++){
+        chainVar1->(*word) = word;
+        chainVar1->next = chainVar2;
+        chainVar2->(*word) = sha1Transformation(chainVar1->(*word));
+
+
+    }
+
+    hashChainNode * hashChain[21] = { 0 };
+
+    hashChain[0]->next = hashChain[1];
+    hashChain[0]->(*word) = "takis"
+
+}
+
+
+
+
+char * sha1Transformation(char * plainText){
+    char const expect[] = "a9993e364706816aba3e25717850c26c9cd0d89d";
+    char result[21];
+    char hexresult[41];
+    size_t offset;
+
+    /* calculate hash */
+    SHA1( result, plainText, strlen(string) );
+
+    /* format the hash for comparison */
+    for( offset = 0; offset < 20; offset++) {
+        sprintf( ( hexresult + (2*offset)), "%02x", result[offset]&0xff);
+    }
+
+    return hexresult;
+}
+
+
+char * reductionFuntion(char * hashValue){
+    
+    char hexresult[41] = hashValue;
+
+    
+
+}
+
+
