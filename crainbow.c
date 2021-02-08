@@ -1,14 +1,41 @@
 #include <stdio.h>
-#define SUCCESS 0
+#include <unistd.h>
+#include "generate_tables.h"
 
 void drawline();
-void testvec1();
 
 
 int main(){
 
     char option;
     char hash_value[20];
+    int validation;
+    int counter = 0;
+    char * plainText;
+    char * reducedValue;
+    int counter = 0;
+    int word_lenght = 0;
+    int databaseEntries = 2;
+    char newLine = '\n';
+
+    char letters[26];
+    char numbers[10];
+    char charList[36];
+
+    //same function as generate_tables.h
+    for (counter = 0; counter < 26; counter++){
+        letters[counter] = 97 + counter;
+        charList[counter] = letters[counter];
+    }
+
+    //Initiallizing decimal number set (0-9).
+    for (counter = 0; counter < 10; counter++){
+        numbers[counter] = counter;
+        charList[26 + counter] = numbers[counter];
+    }
+
+
+    FILE * fPointer;
 
     drawline();
     printf("\tPASSWORD CRACKING WITH RAINBOW TABLES.\n");
@@ -22,6 +49,14 @@ int main(){
         
         sleep(1);
         if (option == 'Y' || option == 'y'){
+            printf("\n\nPlease wait.Rainbow tables are being generated.\nThis might take several minutes...\n\n");
+            validation = generate_table();
+            if (validation == -1) return 0;
+            else{
+                drawline();
+                printf("\n\nYou successfully generated %d rainbow tables.\n\n",validation);
+                drawline();
+            }
             break;
         }
         else if(option == 'N' || option == 'n'){
@@ -39,14 +74,28 @@ int main(){
 
     scanf("%s", hash_value);
 
-    printf("You entered the SHA1 hash value:%s\n\n", hash_value);
+    printf("You entered the SHA1 hash value: %s\n\n", hash_value);
+    sleep(1);
     drawline();
-    
+    sleep(3);
+    printf("\nTrying to find a match.This might take several minutes...\n\n"); 
 
-    testvec1();
-
-    
-    //generate_table();
+    for(counter = 0; counter < validation; counter++){
+        char * accessFile = "tables/table1.txt";
+        int temp = counter + 1;
+        accessFile[12] = temp + 48;
+        fPointer = fopen(accessFile, "r");
+        if (fPointer == NULL){
+        printf("Could not the table file %d.\n",counter + 1);
+        return 1;
+        }
+        while (fgets(plainText, 10, fPointer) != '\n'){
+            printf("%s", plainText);
+            reducedValue = reductionFuntion(plainText, counter + 1, charList);
+            if (reducedValue == plainText) break;
+        }
+        
+    }
 
     return 0;
 }
@@ -59,21 +108,3 @@ void drawline(){
 
 }
 
-
-void testvec1(){
-    char const string[] = "abc";
-    char const expect[] = "a9993e364706816aba3e25717850c26c9cd0d89d";
-    char result[21];
-    char hexresult[41];
-    size_t offset;
-
-    /* calculate hash */
-    SHA1( result, string, strlen(string) );
-
-    /* format the hash for comparison */
-    for( offset = 0; offset < 20; offset++) {
-        sprintf( ( hexresult + (2*offset)), "%02x", result[offset]&0xff);
-    }
-
-    printf("sha1 value of abc is: %s\n",hexresult);
-}
