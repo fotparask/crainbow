@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <time.h>
 #include "generate_tables.h"
 
 void drawline();
@@ -7,16 +8,21 @@ void drawline();
 
 int main(){
 
+    srand(time(NULL));
+
     char option;
     char hash_value[20];
     int validation;
+    int timesToReduce;
     int counter = 0;
-    char * plainText;
-    char * reducedValue;
-    int counter = 0;
+    char inputFromFile[30];
+    char reducedValue[10];
     int word_lenght = 0;
     int databaseEntries = 2;
+    int passwordFound = 0;
     char newLine = '\n';
+    char * tempChar;
+    char * hashPointer;
 
     char letters[26];
     char numbers[10];
@@ -68,34 +74,61 @@ int main(){
         }
     }
 
-    printf("\nTest compleded\n");  
-
     printf("\nEnter the hash value you want to crack:");
 
     scanf("%s", hash_value);
 
     printf("You entered the SHA1 hash value: %s\n\n", hash_value);
-    sleep(1);
     drawline();
-    sleep(3);
-    printf("\nTrying to find a match.This might take several minutes...\n\n"); 
+    
+    printf("\nTrying to find a match.This might take several minutes...\n\n");
 
-    for(counter = 0; counter < validation; counter++){
-        char * accessFile = "tables/table1.txt";
+    for(counter = 0; counter < WORD_CHARACTER_LIMIT; counter++){
+
+        char accessFile[30] = "tables/table";
         int temp = counter + 1;
-        accessFile[12] = temp + 48;
+        char documentNumber = temp + 48;
+        strncat(accessFile, &documentNumber, 1);
+        strcat(accessFile, ".txt");
+        
         fPointer = fopen(accessFile, "r");
         if (fPointer == NULL){
-        printf("Could not the table file %d.\n",counter + 1);
-        return 1;
+            printf("Could not open the table file %d.\n",counter + 1);
+            exit(EXIT_FAILURE);
         }
-        while (fgets(plainText, 10, fPointer) != '\n'){
-            printf("%s", plainText);
-            reducedValue = reductionFuntion(plainText, counter + 1, charList);
-            if (reducedValue == plainText) break;
+
+        printf("Text to open is: %s, random char is %c.\n",accessFile, charList[0]);
+        tempChar = reductionFuntion(hash_value, counter + 1, charList);
+        strcpy(reducedValue,tempChar);
+        for(timesToReduce = 0; timesToReduce < 10; timesToReduce++){
+            while ((fgets(inputFromFile, 30, fPointer)) != NULL){
+                inputFromFile[counter+1] = '\0';
+
+                if (strcmp(reducedValue,inputFromFile) == 0 ){
+                    passwordFound = 1;
+                    break;
+                } 
+            }
+            if(passwordFound) break;
+            
+            hashPointer = sha1Transformation(reducedValue);
+            strcpy(hash_value,hashPointer);
+            tempChar = reductionFuntion(hash_value, counter + 1, charList);
+            strcpy(reducedValue,tempChar);
+            rewind(fPointer);
         }
-        
     }
+
+    printf("\n\n");
+    drawline();
+    if(passwordFound){
+        printf("Congratulation you have found the password!\n\n");
+    }
+    else{
+        printf("Sadly you have not found the password...\n\n");
+    }
+    
+    drawline();
 
     return 0;
 }

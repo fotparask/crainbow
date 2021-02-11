@@ -6,12 +6,17 @@
 
 //change this value to generate
 //smaller in size rainbow tables
-#define WORD_CHARACTER_LIMIT 8
+#define WORD_CHARACTER_LIMIT 2
+
+typedef struct chainEndpoints{
+    char startingPoint[10];
+    char endPoint[10];
+} chainEndpoints;
 
 
 int generate_table();
 char * sha1Transformation(char * plainText);
-char * createHashChain(char * characterList, int wordLenght);
+chainEndpoints createHashChain(char * characterList, int wordLenght);
 char * reductionFuntion(char * hashValue,int wordLenght, char * characterList);
 int returnDecimalValue(int x);
 
@@ -25,14 +30,14 @@ int generate_table(){
     int counter = 0;
     int word_lenght = 0;
     int databaseEntries = 2;
-    char newLine = '\n';
 
     char letters[26];
     char numbers[10];
     char charList[36];
-    char * chainEgdeValue;
-
-    printf("it is done\n");
+    char chainEgdeValues[2][10];
+    char ** tempString;
+    chainEndpoints endPoints2;
+    
 
 
 
@@ -45,12 +50,12 @@ int generate_table(){
 
     //Initiallizing decimal number set (0-9).
     for (counter = 0; counter < 10; counter++){
-        numbers[counter] = counter;
+        numbers[counter] = counter + 48;
         charList[26 + counter] = numbers[counter];
     }
     
 
-
+    
     // char oneCharHashChain[2];
     // char twoCharsHashChain[80];
     // char threeCharsHashChain[3200];
@@ -68,156 +73,162 @@ int generate_table(){
     //Starting with 1 word password. 
     //Limiting password lenght to 8 characters.
 
-    for (word_lenght = 1; word_lenght < WORD_CHARACTER_LIMIT + 1; word_lenght++){
-        for(counter = 0; counter < databaseEntries; counter ++){
-            chainEgdeValue = createHashChain(charList, word_lenght);
-            databaseEntries = databaseEntries * 40;
-            switch (word_lenght){
-            case 1:
-                fPointer = fopen("tables/table1.txt", "w");
-                if(fPointer == NULL){
-                    printf("Unable to create file.\n");
-                    exit(EXIT_FAILURE);
-                }
-                strncat(databaseEntries, &newLine, 1);
-                fputs(databaseEntries, fPointer);
-                fclose(fPointer);
-                break;
-            case 2:
-                fPointer = fopen("tables/table2.txt", "w");
-                if(fPointer == NULL){
-                    printf("Unable to create file.\n");
-                    exit(EXIT_FAILURE);
-                }
-                strncat(databaseEntries, &newLine, 1);
-                fputs(databaseEntries, fPointer);
-                fclose(fPointer);
-                break;
-            case 3:
-                fPointer = fopen("tables/table3.txt", "w");
-                if(fPointer == NULL){
-                    printf("Unable to create file.\n");
-                    exit(EXIT_FAILURE);
-                }
-                strncat(databaseEntries, &newLine, 1);
-                fputs(databaseEntries, fPointer);
-                fclose(fPointer);
-                break;
-            case 4:
-                fPointer = fopen("tables/table4.txt", "w");
-                if(fPointer == NULL){
-                    printf("Unable to create file.\n");
-                    exit(EXIT_FAILURE);
-                }
-                strncat(databaseEntries, &newLine, 1);
-                fputs(databaseEntries, fPointer);
-                fclose(fPointer);
-                break;
-            case 5:
-                fPointer = fopen("tables/table5.txt", "w");
-                if(fPointer == NULL){
-                    printf("Unable to create file.\n");
-                    exit(EXIT_FAILURE);
-                }
-                strncat(databaseEntries, &newLine, 1);
-                fputs(databaseEntries, fPointer);
-                fclose(fPointer);
-                break;
-            case 6:
-                fPointer = fopen("tables/table6.txt", "w");
-                if(fPointer == NULL){
-                    printf("Unable to create file.\n");
-                    exit(EXIT_FAILURE);
-                }
-                strncat(databaseEntries, &newLine, 1);
-                fputs(databaseEntries, fPointer);
-                fclose(fPointer);
-                break;
-            case 7:
-                fPointer = fopen("tables/table7.txt", "w");
-                if(fPointer == NULL){
-                    printf("Unable to create file.\n");
-                    exit(EXIT_FAILURE);
-                }
-                strncat(databaseEntries, &newLine, 1);
-                fputs(databaseEntries, fPointer);
-                fclose(fPointer);
-                break;
-            case 8:
-                fPointer = fopen("tables/table8.txt", "w");
-                if(fPointer == NULL){
-                    printf("Unable to create file.\n");
-                    exit(EXIT_FAILURE);
-                }
-                strncat(databaseEntries, &newLine, 1);
-                fputs(databaseEntries, fPointer);
-                fclose(fPointer);
-                break;
-            }
-        }
 
-        
+    //Initializing Files.
+    
+    for (counter = 1; counter <= WORD_CHARACTER_LIMIT; counter++){
+        char accessFile[30] = "tables/table";
+        int temp = counter + 1;
+        char documentNumber = counter + 48;
+        strncat(accessFile, &documentNumber, 1);
+        strcat(accessFile, ".txt");
+
+        fPointer = fopen(accessFile, "w");
+        if (fPointer == NULL){
+            printf("Could not the table file %d.\n",counter + 1);
+            exit(EXIT_FAILURE);
+        }
+        fputs("", fPointer);
+        fclose(fPointer);
     }
     
+    
+
+    for (word_lenght = 1; word_lenght <= WORD_CHARACTER_LIMIT; word_lenght++){
+        printf("\nTable with %d characters is now being generated...",word_lenght);
+        printf("\n");
+        switch (word_lenght){
+            case 1:
+                fPointer = fopen("tables/table1.txt", "a");
+                if(fPointer == NULL){
+                    printf("Unable to create file.\n");
+                    exit(EXIT_FAILURE);
+                }
+                break;
+            case 2:
+                fPointer = fopen("tables/table2.txt", "a");
+                if(fPointer == NULL){
+                    printf("Unable to create file.\n");
+                    exit(EXIT_FAILURE);
+                }
+                break;
+            case 3:
+                fPointer = fopen("tables/table3.txt", "a");
+                if(fPointer == NULL){
+                    printf("Unable to create file.\n");
+                    exit(EXIT_FAILURE);
+                }
+                break;
+            case 4:
+                fPointer = fopen("tables/table4.txt", "a");
+                if(fPointer == NULL){
+                    printf("Unable to create file.\n");
+                    exit(EXIT_FAILURE);
+                }
+                break;
+            case 5:
+                fPointer = fopen("tables/table5.txt", "a");
+                if(fPointer == NULL){
+                    printf("Unable to create file.\n");
+                    exit(EXIT_FAILURE);
+                }
+                break;
+            case 6:
+                fPointer = fopen("tables/table6.txt", "a");
+                if(fPointer == NULL){
+                    printf("Unable to create file.\n");
+                    exit(EXIT_FAILURE);
+                }
+                break;
+            case 7:
+                fPointer = fopen("tables/table7.txt", "a");
+                if(fPointer == NULL){
+                    printf("Unable to create file.\n");
+                    exit(EXIT_FAILURE);
+                }
+                break;
+            case 8:
+                fPointer = fopen("tables/table8.txt", "a");
+                if(fPointer == NULL){
+                    printf("Unable to create file.\n");
+                    exit(EXIT_FAILURE);
+                }
+                break;
+        }
+        for(counter = 0; counter < databaseEntries; counter ++){
+            endPoints2 = createHashChain(charList, word_lenght);
+            //printf("Chain starting point is %s.\nEnding point is %s\n",endPoints2.startingPoint,endPoints2.endPoint);
+            strcpy(chainEgdeValues[0],endPoints2.startingPoint);
+            strcpy(chainEgdeValues[1],endPoints2.endPoint);
+            fputs(chainEgdeValues[0], fPointer);
+            fputs("\t", fPointer);
+            fputs(chainEgdeValues[1], fPointer);
+            fputs("\n", fPointer);
+        }
+        fclose(fPointer);
+        printf("\n\nFinished generating table with %d characters.Created table%d file successfully.",word_lenght,word_lenght);
+       
+        databaseEntries = databaseEntries * 40;
+    }
+    printf("\n\n");
     return WORD_CHARACTER_LIMIT;
 }
 
 
 
 
-char * createHashChain(char * characterList,int wordLenght){
+chainEndpoints createHashChain(char * characterList,int wordLenght){
 
-    char * tempWord;
-    char * chainEndpoint;
+
+    char tempWord[30] = "";
     int counter = 0;
+    chainEndpoints endPoints;
 
-    typedef struct node{
-        char * word;
-        struct node *next;
-    } hashChainNode;
+    char * chainVar1;
+    char * chainVar2;
+    char * chainVar3;
 
-    hashChainNode *chainVar1 = malloc(sizeof(hashChainNode));
-    hashChainNode *chainVar2 = malloc(sizeof(hashChainNode));
-    hashChainNode *chainVar3 = malloc(sizeof(hashChainNode));
-
-    srand(time(0));
  
     //generating random words and adding them to the first point of the hash chain
     //We need a random first word for the hash chain in order to proceed.
     //we pick a random character from the array characterList, that has all characters.
-    char temp = characterList[rand()%36];
-    //then append that character at a string.
-    strncat(tempWord, &temp, 1);
-
+    
     //repeating this procedure times the word lenght.
+    for(counter = 0; counter < wordLenght; counter++){
+        char temp = characterList[rand()%36];
+        strncat(tempWord, &temp, 1);
+    }
 
-    chainEndpoint = tempWord;
+    strcpy(endPoints.startingPoint,tempWord);
 
 
     //Making the hash Chain. We will be needing only the first and the last value of the chain,
     //so there is no need to make more than 3 hashChain Nodes.
-    for(counter = 0; counter < 10; counter++){
-        chainVar1->word = tempWord;
-        chainVar1->next = chainVar2;
-        chainVar2->word = sha1Transformation(chainVar1->word);
-        chainVar2->next = chainVar3;
-        chainVar3->word = reductionFuntion(chainVar2->word, wordLenght, characterList);
-        tempWord = chainVar3->word;
+    for(counter = 0; counter < 21; counter++){
+        char * hash_value;
+        hash_value = (char *) malloc(42);
+        chainVar1 = tempWord;
+        chainVar2 = sha1Transformation(chainVar1);
+        strcpy(hash_value, chainVar2); 
+        chainVar3 = reductionFuntion(hash_value, wordLenght, characterList);
+        strcpy(tempWord, chainVar3);
+        free(hash_value);
     }
 
-    chainEndpoint = tempWord;
+    strcpy(endPoints.endPoint,tempWord);
+    printf("Chain starting point is %s.\nEnding point is %s\n",endPoints.startingPoint,endPoints.endPoint);
 
-    return chainEndpoint;
+    return endPoints;
 }
 
 
 
 
 char * sha1Transformation(char * plainText){
-    char const expect[] = "a9993e364706816aba3e25717850c26c9cd0d89d";
     char result[21];
-    char hashValue[41];
     size_t offset;
+    char hashValue[41] = {};
+    char *valuePointer = hashValue;
 
     //calculating sha1 hash value
     SHA1( result, plainText, strlen(plainText) );
@@ -227,23 +238,26 @@ char * sha1Transformation(char * plainText){
         sprintf( ( hashValue + (2*offset)), "%02x", result[offset]&0xff);
     }
 
-    return hashValue;
+    
+
+    return valuePointer;
 }
 
 
 char * reductionFuntion(char * hashValue,int wordLenght, char * characterList){
     
-
     //Reduced function will be described better in the README file.
+    
     int positionSelected = 0;
-    char * reductionResult = "";
+    char reductionResult[20] = "";
+    char *valuePointer = reductionResult;
     int counter = 0;
     int startingPoint = 0;
     int temp = 0;
     int var1 = 0;
     int var2 = 0;
     int var3 = 0;
-
+    
     
 
     for(counter = 0; counter < wordLenght; counter++){
@@ -256,21 +270,21 @@ char * reductionFuntion(char * hashValue,int wordLenght, char * characterList){
         temp = hashValue[startingPoint + 2];
         var3 = returnDecimalValue(temp);
 
-        positionSelected = var1 + var2 + var3%4;
-        
+        positionSelected = var1 + var2 + (var3+rand())%4;
+
         strncat(reductionResult, &characterList[positionSelected], 1);
 
     }
 
     
-    return reductionResult;
+    return valuePointer;
 
 }
 
 
 int returnDecimalValue(int asciiValue){
 
-    if(asciiValue > 47 && asciiValue < 48){
+    if(asciiValue > 47 && asciiValue < 58){
         asciiValue = asciiValue - 48;
     }
     else if(asciiValue > 96 && asciiValue < 103){
