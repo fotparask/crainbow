@@ -6,7 +6,7 @@
 
 //change this value to generate
 //smaller in size rainbow tables
-#define WORD_CHARACTER_LIMIT 2
+#define WORD_CHARACTER_LIMIT 5
 
 typedef struct chainEndpoints{
     char startingPoint[10];
@@ -216,7 +216,6 @@ chainEndpoints createHashChain(char * characterList,int wordLenght){
     }
 
     strcpy(endPoints.endPoint,tempWord);
-    printf("Chain starting point is %s.\nEnding point is %s\n",endPoints.startingPoint,endPoints.endPoint);
 
     return endPoints;
 }
@@ -249,7 +248,7 @@ char * reductionFuntion(char * hashValue,int wordLenght, char * characterList){
     //Reduced function will be described better in the README file.
     
     int positionSelected = 0;
-    char reductionResult[20] = "";
+    char reductionResult[10] = "";
     char *valuePointer = reductionResult;
     int counter = 0;
     int startingPoint = 0;
@@ -270,15 +269,13 @@ char * reductionFuntion(char * hashValue,int wordLenght, char * characterList){
         temp = hashValue[startingPoint + 2];
         var3 = returnDecimalValue(temp);
 
-        positionSelected = var1 + var2 + (var3+rand())%4;
-
+        positionSelected = var1 + var2 + var3%4;
+        
         strncat(reductionResult, &characterList[positionSelected], 1);
 
     }
-
     
     return valuePointer;
-
 }
 
 

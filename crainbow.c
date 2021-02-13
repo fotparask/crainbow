@@ -4,14 +4,14 @@
 #include "generate_tables.h"
 
 void drawline();
-
+char * initiateSearchInHashChain(char * fistChainWord, char * value_to_crack,int wordLenght,char * characterList);
 
 int main(){
 
     srand(time(NULL));
 
     char option;
-    char hash_value[20];
+    char hash_value[41];
     int validation;
     int timesToReduce;
     int counter = 0;
@@ -20,9 +20,13 @@ int main(){
     int word_lenght = 0;
     int databaseEntries = 2;
     int passwordFound = 0;
+    char password_found[10];
     char newLine = '\n';
     char * tempChar;
     char * hashPointer;
+    char hash_value_to_crack[41];
+    char firstHashChainWord[10] = {};
+    char wordToCompare[10] = {};
 
     char letters[26];
     char numbers[10];
@@ -36,7 +40,7 @@ int main(){
 
     //Initiallizing decimal number set (0-9).
     for (counter = 0; counter < 10; counter++){
-        numbers[counter] = counter;
+        numbers[counter] = counter + 48;
         charList[26 + counter] = numbers[counter];
     }
 
@@ -76,9 +80,9 @@ int main(){
 
     printf("\nEnter the hash value you want to crack:");
 
-    scanf("%s", hash_value);
+    scanf("%s", hash_value_to_crack);
 
-    printf("You entered the SHA1 hash value: %s\n\n", hash_value);
+    printf("You entered the SHA1 hash value: %s\n\n", hash_value_to_crack);
     drawline();
     
     printf("\nTrying to find a match.This might take several minutes...\n\n");
@@ -97,16 +101,30 @@ int main(){
             exit(EXIT_FAILURE);
         }
 
-        printf("Text to open is: %s, random char is %c.\n",accessFile, charList[0]);
-        tempChar = reductionFuntion(hash_value, counter + 1, charList);
+        printf("Table we are searching the password is: %s.\n",accessFile);
+        tempChar = reductionFuntion(hash_value_to_crack, counter + 1, charList);
         strcpy(reducedValue,tempChar);
-        for(timesToReduce = 0; timesToReduce < 10; timesToReduce++){
+        for(timesToReduce = 0; timesToReduce < 20; timesToReduce++){
             while ((fgets(inputFromFile, 30, fPointer)) != NULL){
-                inputFromFile[counter+1] = '\0';
-
-                if (strcmp(reducedValue,inputFromFile) == 0 ){
-                    passwordFound = 1;
-                    break;
+                //formating the second word, the end of the chain, to an allocated string.
+                for(int y = 0; y < counter + 1; y++){
+                    wordToCompare[y] = inputFromFile[y + counter + 2];
+                }
+                
+                wordToCompare[counter + 1] = '\0';
+                if (strcmp(reducedValue,wordToCompare) == 0 ){
+                    //formating the first word, the start of the chain, to an allocated string.
+                    for(int z = 0; z <= counter; z++){
+                        firstHashChainWord[z] = inputFromFile[z];
+                    }
+                    firstHashChainWord[counter + 1] = '\0';
+                    tempChar = initiateSearchInHashChain(firstHashChainWord, hash_value_to_crack, counter + 1, charList);
+                    if(tempChar != NULL){
+                        strcpy(password_found,tempChar);
+                        passwordFound = 1;
+                        break;
+                    }
+                    
                 } 
             }
             if(passwordFound) break;
@@ -120,20 +138,23 @@ int main(){
     }
 
     printf("\n\n");
-    drawline();
     if(passwordFound){
-        printf("Congratulation you have found the password!\n\n");
+        drawline();
+        printf("\n\nCongratulation you have found the password!\n\n");
+        drawline();
+        printf("\n\nThe hash:%s\nComes form the plain text:%s\n\n",hash_value_to_crack,password_found);
+        drawline();
     }
     else{
-        printf("Sadly you have not found the password...\n\n");
+        drawline();
+        printf("Sadly you have not found the password...\n");
+        printf("This probably means the the rainbow tables do not contain a password match.\n");
+        drawline();
     }
     
-    drawline();
-
     return 0;
 }
 
-//test
 
 void drawline(){
 
@@ -141,3 +162,30 @@ void drawline(){
 
 }
 
+
+char * initiateSearchInHashChain(char * fistChainWord, char * value_to_crack,int wordLenght,char * characterList){
+
+    char * chainVar1;
+    char * chainVar2;
+    char * chainVar3;
+    char tempWord[10];
+
+    int counter = 0;
+
+    strcpy(tempWord,fistChainWord);
+    for(counter = 0; counter < 21; counter++){
+        char * hash_value;
+        hash_value = (char *) malloc(42);
+        chainVar1 = tempWord;
+        chainVar2 = sha1Transformation(chainVar1);
+        strcpy(hash_value, chainVar2); 
+        if(strcmp(value_to_crack,hash_value) == 0){
+            return chainVar1;
+        }
+        chainVar3 = reductionFuntion(hash_value, wordLenght, characterList);
+        strcpy(tempWord, chainVar3);
+        free(hash_value);
+    }
+
+    return NULL;
+}
