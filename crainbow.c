@@ -6,6 +6,16 @@
 void drawline();
 char * initiateSearchInHashChain(char * fistChainWord, char * value_to_crack,int wordLenght,char * characterList);
 
+
+static char oneCharHashChain[2][5];
+static char twoCharsHashChain[80][7];
+static char threeCharsHashChain[3200][9];
+static char fourCharsHashChain[128000][11];
+static char fiveCharsHashChain[5120000][13];
+static char sixCharsHashChain[204800000][15];
+
+
+
 int main(){
 
     srand(time(NULL));
@@ -15,6 +25,7 @@ int main(){
     int validation;
     int timesToReduce;
     int counter = 0;
+    int counter2 = 0;
     char inputFromFile[30];
     char reducedValue[10];
     int word_lenght = 0;
@@ -31,6 +42,9 @@ int main(){
     char letters[26];
     char numbers[10];
     char charList[36];
+
+
+    
 
     //same function as generate_tables.h
     for (counter = 0; counter < 26; counter++){
@@ -85,7 +99,7 @@ int main(){
     printf("You entered the SHA1 hash value: %s\n\n", hash_value_to_crack);
     drawline();
     
-    printf("\nTrying to find a match.This might take several minutes...\n\n");
+    printf("\nTrying to find a match.This might take several minutes...\n\n\n");
 
     for(counter = 0; counter < WORD_CHARACTER_LIMIT; counter++){
 
@@ -101,32 +115,235 @@ int main(){
             exit(EXIT_FAILURE);
         }
 
+        //Picking the file we are going to search and start.
         printf("Table we are searching the password is: %s.\n",accessFile);
         tempChar = reductionFuntion(hash_value_to_crack, counter + 1, charList);
         strcpy(reducedValue,tempChar);
-        for(timesToReduce = 0; timesToReduce < 20; timesToReduce++){
-            while ((fgets(inputFromFile, 30, fPointer)) != NULL){
-                //formating the second word, the end of the chain, to an allocated string.
-                for(int y = 0; y < counter + 1; y++){
-                    wordToCompare[y] = inputFromFile[y + counter + 2];
+        char ezpez[10];
+        for(timesToReduce = 0; timesToReduce < 21; timesToReduce++){
+            switch (counter){
+            //Each switch case changes depending in the number of characters
+            //in the worh we are looking for. 0 is for 1, 1 is for 2 characters etc.
+            case 0:
+                counter2 = 0;
+                //Initiallizing all the content from file1 to the memory buffer.
+                while ((fgets(inputFromFile, 30, fPointer)) != NULL){
+                    strcpy(oneCharHashChain[counter2],inputFromFile);
+                    counter2++;
                 }
-                
-                wordToCompare[counter + 1] = '\0';
-                if (strcmp(reducedValue,wordToCompare) == 0 ){
-                    //formating the first word, the start of the chain, to an allocated string.
-                    for(int z = 0; z <= counter; z++){
-                        firstHashChainWord[z] = inputFromFile[z];
+                counter2 = 0;
+                while(counter2 < 2){ 
+                    //formating the last word, the end of the chain, to an allocated string.
+                    //modifying the string in order to compare it to 1 character words.
+                    for(int y = 0; y < 1; y++){
+                        wordToCompare[y] = oneCharHashChain[counter2][y + 2];
                     }
-                    firstHashChainWord[counter + 1] = '\0';
-                    tempChar = initiateSearchInHashChain(firstHashChainWord, hash_value_to_crack, counter + 1, charList);
-                    if(tempChar != NULL){
-                        strcpy(password_found,tempChar);
-                        passwordFound = 1;
-                        break;
+                    wordToCompare[1] = '\0';
+                    //printf("Comparing word %s with word %s\n",reducedValue,wordToCompare);
+                    if (strcmp(reducedValue,wordToCompare) == 0 ){
+                        //formating the first word, the start of the chain, to an allocated string.
+                        for(int z = 0; z <= 1; z++){
+                            firstHashChainWord[z] = oneCharHashChain[counter2][z];
+                        }
+                        firstHashChainWord[1] = '\0';
+                        tempChar = initiateSearchInHashChain(firstHashChainWord, hash_value_to_crack, 1, charList);
+                        if(tempChar != NULL){
+                            strcpy(password_found,tempChar);
+                            passwordFound = 1;
+                            break;
+                        }
+                    }
+                    counter2++;
+                }
+                break;
+            case 1:
+                counter2 = 0;
+                //Initiallizing all the content from file2 to the memory buffer.
+                while ((fgets(inputFromFile, 30, fPointer)) != NULL){
+                        strcpy(twoCharsHashChain[counter2],inputFromFile);
+                        counter2++;
+                }
+                counter2 = 0;
+                while(counter2 < 80){
+                    //formating the last word, the end of the chain, to an allocated string.
+                    //modifying the string in order to compare it to 2 character words.
+                    for(int y = 0; y < 2; y++){
+                        wordToCompare[y] = twoCharsHashChain[counter2][y + 3];
+                    }
+                    wordToCompare[2] = '\0';
+                    //printf("Comparing word %s with word %s\r",reducedValue,wordToCompare);
+                    if (strcmp(reducedValue,wordToCompare) == 0 ){
+                        //formating the first word, the start of the chain, to an allocated string.
+                        for(int z = 0; z < 2; z++){
+                            firstHashChainWord[z] = twoCharsHashChain[counter2][z];
+                        }
+                        firstHashChainWord[2] = '\0';
+                        tempChar = initiateSearchInHashChain(firstHashChainWord, hash_value_to_crack, 2, charList);
+                        if(tempChar != NULL){
+                            strcpy(password_found,tempChar);
+                            passwordFound = 1;
+                            break;
+                        }
+                    }
+                    counter2++;
+                }
+                break;
+            case 2:
+                counter2 = 0;
+                //Initiallizing all the content from file3 to the memory buffer.
+                while ((fgets(inputFromFile, 30, fPointer)) != NULL){
+                        strcpy(threeCharsHashChain[counter2],inputFromFile);
+                        counter2++;
+                    }
+                counter2 = 0;
+                while(counter2 < 3200){
+                    //formating the last word, the end of the chain, to an allocated string.
+                    //modifying the string in order to compare it to 3 character words.
+                    for(int y = 0; y < 3; y++){
+                        wordToCompare[y] = threeCharsHashChain[counter2][y + 4];
+                    }
+                    wordToCompare[3] = '\0';
+                    //printf("Comparing word %s with word %s\r",reducedValue,wordToCompare);
+                    if (strcmp(reducedValue,wordToCompare) == 0 ){
+                        //formating the first word, the start of the chain, to an allocated string.
+                        for(int z = 0; z < 3; z++){
+                            firstHashChainWord[z] = threeCharsHashChain[counter2][z];
+                        }
+                        firstHashChainWord[3] = '\0';
+                        tempChar = initiateSearchInHashChain(firstHashChainWord, hash_value_to_crack, 3, charList);
+                        if(tempChar != NULL){
+                            strcpy(password_found,tempChar);
+                            passwordFound = 1;
+                            break;
+                        }
+                    }
+                    counter2++;
+                }
+                break;
+            case 3:
+                counter2 = 0;
+                //Initiallizing all the content from file4 to the memory buffer.
+                while ((fgets(inputFromFile, 30, fPointer)) != NULL){
+                        strcpy(fourCharsHashChain[counter2],inputFromFile);
+                        counter2++;
+                    }
+                counter2 = 0;
+                while(counter2 < 128000){
+                    //formating the last word, the end of the chain, to an allocated string.
+                    //modifying the string in order to compare it to 4 character words.
+                    for(int y = 0; y < 4; y++){
+                        wordToCompare[y] = fourCharsHashChain[counter2][y + 5];
+                    }
+                    wordToCompare[4] = '\0';
+                    printf("Comparing word %s with word %s\r",reducedValue,wordToCompare);
+                    if (strcmp(reducedValue,wordToCompare) == 0 ){
+                        //formating the first word, the start of the chain, to an allocated string.
+                        for(int z = 0; z < 4; z++){
+                            firstHashChainWord[z] = fourCharsHashChain[counter2][z];
+                        }
+                        firstHashChainWord[4] = '\0';
+                        tempChar = initiateSearchInHashChain(firstHashChainWord, hash_value_to_crack, 4, charList);
+                        if(tempChar != NULL){
+                            strcpy(password_found,tempChar);
+                            passwordFound = 1;
+                            break;
+                        }
+                    }
+                    counter2++;
+                }
+                break;
+            case 4:
+                counter2 = 0;
+                //Initiallizing all the content from file5 to the memory buffer.
+                while ((fgets(inputFromFile, 30, fPointer)) != NULL){
+                        strcpy(fiveCharsHashChain[counter2],inputFromFile);
+                        counter2++;
+                    }
+                counter2 = 0;
+                while(counter2 < 5120000){
+                    //formating the last word, the end of the chain, to an allocated string.
+                    //modifying the string in order to compare it to 5 character words.
+                    for(int y = 0; y < 5; y++){
+                        wordToCompare[y] = fiveCharsHashChain[y + 6][counter2];
+                    }
+                    wordToCompare[5] = '\0';
+                    printf("Comparing word %s with word %s\r",reducedValue,wordToCompare);
+                    if (strcmp(reducedValue,wordToCompare) == 0 ){
+                        //formating the first word, the start of the chain, to an allocated string.
+                        for(int z = 0; z < 5; z++){
+                            firstHashChainWord[z] = fiveCharsHashChain[counter2][z];
+                        }
+                        firstHashChainWord[5] = '\0';
+                        tempChar = initiateSearchInHashChain(firstHashChainWord, hash_value_to_crack, 5, charList);
+                        if(tempChar != NULL){
+                            strcpy(password_found,tempChar);
+                            passwordFound = 1;
+                            break;
+                        }
+                    }
+                    counter2++;
+                }
+                break;
+            case 5:
+                counter2 = 0;
+                //Initiallizing all the content from file6 to the memory buffer.
+                while ((fgets(inputFromFile, 30, fPointer)) != NULL){
+                        strcpy(sixCharsHashChain[counter2],inputFromFile);
+                        counter2++;
+                    }
+                counter2 = 0;
+                while(counter2 < 204800000){
+                    //formating the last word, the end of the chain, to an allocated string.
+                    //modifying the string in order to compare it to 6 character words.
+                    for(int y = 0; y < 6; y++){
+                        wordToCompare[y] = sixCharsHashChain[counter2][y + 7];
+                    }
+                    wordToCompare[6] = '\0';
+                    printf("Comparing word %s with word %s\r",reducedValue,wordToCompare);
+                    if (strcmp(reducedValue,wordToCompare) == 0 ){
+                        //formating the first word, the start of the chain, to an allocated string.
+                        for(int z = 0; z < 6; z++){
+                            firstHashChainWord[z] = sixCharsHashChain[counter2][z];
+                        }
+                        firstHashChainWord[6] = '\0';
+                        tempChar = initiateSearchInHashChain(firstHashChainWord, hash_value_to_crack, 6, charList);
+                        if(tempChar != NULL){
+                            strcpy(password_found,tempChar);
+                            passwordFound = 1;
+                            break;
+                        }
+                    }
+                    counter2++;
+                }
+                break;
+            case 6:
+            case 7:
+                while ((fgets(inputFromFile, 30, fPointer)) != NULL){
+                    //formating the second word, the end of the chain, to an allocated string.
+                    for(int y = 0; y < counter + 1; y++){
+                        wordToCompare[y] = inputFromFile[y + counter + 2];
                     }
                     
-                } 
+                    wordToCompare[counter + 1] = '\0';
+                    printf("Comparing word %s with word %s\r",reducedValue,wordToCompare);
+                    if (strcmp(reducedValue,wordToCompare) == 0 ){
+                        //formating the first word, the start of the chain, to an allocated string.
+                        for(int z = 0; z <= counter; z++){
+                            firstHashChainWord[z] = inputFromFile[z];
+                        }
+                        firstHashChainWord[counter + 1] = '\0';
+                        tempChar = initiateSearchInHashChain(firstHashChainWord, hash_value_to_crack, counter + 1, charList);
+                        if(tempChar != NULL){
+                            strcpy(password_found,tempChar);
+                            passwordFound = 1;
+                            break;
+                        }
+                        
+                    } 
+                }
+                break;
             }
+            
             if(passwordFound) break;
             
             hashPointer = sha1Transformation(reducedValue);

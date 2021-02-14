@@ -2,11 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>
 #include "sha1.h"
 
 //change this value to generate
 //smaller in size rainbow tables
-#define WORD_CHARACTER_LIMIT 5
+#define WORD_CHARACTER_LIMIT 4
 
 typedef struct chainEndpoints{
     char startingPoint[10];
@@ -19,6 +20,7 @@ char * sha1Transformation(char * plainText);
 chainEndpoints createHashChain(char * characterList, int wordLenght);
 char * reductionFuntion(char * hashValue,int wordLenght, char * characterList);
 int returnDecimalValue(int x);
+void hexToDec(char * hexadecimal, long * decimal);
 
 
 
@@ -247,30 +249,31 @@ char * reductionFuntion(char * hashValue,int wordLenght, char * characterList){
     
     //Reduced function will be described better in the README file.
     
-    int positionSelected = 0;
+    long positionSelected = 0;
+    char sha1Hash[41];
+    strcpy(sha1Hash,hashValue);
     char reductionResult[10] = "";
     char *valuePointer = reductionResult;
     int counter = 0;
     int startingPoint = 0;
-    int temp = 0;
-    int var1 = 0;
-    int var2 = 0;
-    int var3 = 0;
+    char fiveDigitHexWord[6];
     
     
 
     for(counter = 0; counter < wordLenght; counter++){
 
-        startingPoint = counter * 3;
-        temp = hashValue[startingPoint];
-        var1 = returnDecimalValue(temp);
-        temp = hashValue[startingPoint + 1];
-        var2 = returnDecimalValue(temp);
-        temp = hashValue[startingPoint + 2];
-        var3 = returnDecimalValue(temp);
+        startingPoint = counter * 5;
 
-        positionSelected = var1 + var2 + var3%4;
-        
+        fiveDigitHexWord[0] = sha1Hash[startingPoint];
+        fiveDigitHexWord[1] = sha1Hash[startingPoint + 1];
+        fiveDigitHexWord[2] = sha1Hash[startingPoint + 2];
+        fiveDigitHexWord[3] = sha1Hash[startingPoint + 3];
+        fiveDigitHexWord[4] = sha1Hash[startingPoint + 4];
+        fiveDigitHexWord[5] = '\0';
+
+        hexToDec(fiveDigitHexWord, &positionSelected);
+
+        positionSelected = positionSelected % 36;
         strncat(reductionResult, &characterList[positionSelected], 1);
 
     }
@@ -279,17 +282,35 @@ char * reductionFuntion(char * hashValue,int wordLenght, char * characterList){
 }
 
 
-int returnDecimalValue(int asciiValue){
+void hexToDec(char * hexadecimal, long * decimal){
 
-    if(asciiValue > 47 && asciiValue < 58){
-        asciiValue = asciiValue - 48;
-    }
-    else if(asciiValue > 96 && asciiValue < 103){
-        asciiValue = asciiValue - 87;
-    }
-    else return -1;
+    char hex[5];
+    strcpy(hex,hexadecimal);
+    int i = 0; 
+    int val = 0; 
+    int lenght = 0;
 
-    return asciiValue;
+
+    *decimal = 0;
+    //length of total number of hex digit
+    lenght = strlen(hex);
+    lenght--;
+   
+    //Iterate over each hex digit 
+    for(i=0; hex[i]!='\0'; i++){
+        //Find the decimal representation of hex[i]
+        if(hex[i]>='0' && hex[i]<='9'){
+            val = hex[i] - 48;
+        }
+        else if(hex[i]>='a' && hex[i]<='f'){
+            val = hex[i] - 97 + 10;
+        }
+        else if(hex[i]>='A' && hex[i]<='F') {
+            val = hex[i] - 65 + 10;
+        }
+
+        *decimal += val * pow(16, lenght);
+        lenght--;
+    }
 }
-
 
